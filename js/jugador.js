@@ -10,7 +10,51 @@ var Jugador = {
   alto: 30,
   velocidad: 10,
   vidas: 5,
-  // Hay que agregar lo que falte al jugador: movimientos, perdida de vidas,
-  // y todo lo que haga falta para que cumpla con sus responsabilidades
 
-}
+  //Mueve el Jugador a la posición introducida
+  mover: function(movX, movY){
+    this.x += movX;
+    this.y += movY;
+  },
+
+  //Cambia la dirección del Jugador
+  cambiarDireccion: function(direccion){
+    switch (direccion) {
+      case 'izq':
+        if (this.sprite != 'imagenes/auto_rojo_izquierda.png') {
+          this.sprite = 'imagenes/auto_rojo_izquierda.png';
+          this.ancho = 30;
+          this.alto = 15;
+        }
+        break;
+      case 'arriba':
+        if (this.sprite != 'imagenes/auto_rojo_arriba.png') {
+          this.sprite = 'imagenes/auto_rojo_arriba.png';
+          this.ancho = 15;
+          this.alto = 30;
+        }
+        break;
+      case 'der':
+        if (this.sprite != 'imagenes/auto_rojo_derecha.png') {
+          this.sprite = 'imagenes/auto_rojo_derecha.png';
+          this.ancho = 30;
+          this.alto = 15;
+        }
+        break;
+      case 'abajo':
+        if (this.sprite != 'imagenes/auto_rojo_abajo.png') {
+          this.sprite = 'imagenes/auto_rojo_abajo.png';
+          this.ancho = 15;
+          this.alto = 30;
+        }
+        break;
+      default:
+    }
+  },
+
+  //Quita una vida al Jugador
+  perderVidas: function(cantVidas){
+    this.vidas -= cantVidas; 
+  }
+
+};

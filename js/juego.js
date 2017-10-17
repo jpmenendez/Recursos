@@ -128,10 +128,10 @@ Juego.capturarMovimiento = function(tecla) {
 
   // Si se puede mover hacia esa posicion hay que hacer efectivo este movimiento
   if (this.chequearColisiones(movX + this.jugador.x, movY + this.jugador.y)) {
-    /* Aca tiene que estar la logica para mover al jugador invocando alguno
-    de sus metodos  */
-
-    /* COMPLETAR */
+    //Mueve el Jugador a la posición introducida
+    Jugador.mover(movX, movY);
+    //Cambia la dirección del Jugador 
+    Jugador.cambiarDireccion(tecla);
   }
 };
 
@@ -147,6 +147,7 @@ Juego.dibujar = function() {
   "Dibujante dibuja al jugador" */
 
   /* Completar */
+  Dibujante.dibujarEntidad(Jugador);
 
   // Se recorren los obstaculos de la carretera pintandolos
   this.obstaculosCarretera.forEach(function(obstaculo) {
