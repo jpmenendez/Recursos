@@ -9,7 +9,7 @@ var Jugador = {
   ancho: 15,
   alto: 30,
   velocidad: 10,
-  vidas: 5,
+  vidas: 10,
 
   //Mueve el Jugador a la posición introducida
   mover: function(movX, movY){
@@ -54,7 +54,7 @@ var Jugador = {
 
   //Quita una vida al Jugador
   perderVidas: function(cantVidas){
-    this.vidas -= cantVidas; 
+    this.vidas -= cantVidas;
   }
 
-};
+}

@@ -18,10 +18,22 @@ var Juego = {
   ganador: false,
 
   obstaculosCarretera: [
-    /*Aca se van a agregar los obstaculos visibles. Tenemos una valla horizontal
-    de ejemplo, pero podras agregar muchos mas. */
-    new Obstaculo('imagenes/valla_horizontal.png', 70, 430, 30, 30, 1)
-
+    //Acá se agregan los obstaculos visibles.
+    new Obstaculo('imagenes/valla_horizontal.png', 130, 100, 30, 30, 1),
+    new Obstaculo('imagenes/valla_horizontal.png', 160, 100, 30, 30, 1),
+    new Obstaculo('imagenes/valla_horizontal.png', 520, 420, 30, 30, 1),
+    new Obstaculo('imagenes/valla_horizontal.png', 70, 450, 30, 30, 1),
+    new Obstaculo('imagenes/valla_horizontal.png', 100, 450, 30, 30, 1),
+    new Obstaculo('imagenes/valla_horizontal.png', 130, 450, 30, 30, 1),
+    new Obstaculo('imagenes/valla_vertical.png', 180, 470, 30, 30, 1),
+    new Obstaculo('imagenes/valla_vertical.png', 500, 450, 30, 30, 1),
+    new Obstaculo('imagenes/bache.png', 175, 280, 30, 30, 2),
+    new Obstaculo('imagenes/bache.png', 325, 480, 30, 30, 2),
+    new Obstaculo('imagenes/bache.png', 500, 125, 30, 30, 2),
+    new Obstaculo('imagenes/bache.png', 825, 420, 30, 30, 2),
+    new Obstaculo('imagenes/auto_verde_abajo.png', 180, 245, 15, 30, 3),
+    new Obstaculo('imagenes/auto_verde_abajo.png', 832, 380, 15, 30, 3),
+    new Obstaculo('imagenes/auto_verde_derecha.png', 380, 485, 30, 15, 3)
   ],
   /* Estos son los bordes con los que se puede chocar, por ejemplo, la vereda.
    Ya estan ubicados en sus lugares correspondientes. Ya aparecen en el mapa, ya
@@ -130,7 +142,7 @@ Juego.capturarMovimiento = function(tecla) {
   if (this.chequearColisiones(movX + this.jugador.x, movY + this.jugador.y)) {
     //Mueve el Jugador a la posición introducida
     Jugador.mover(movX, movY);
-    //Cambia la dirección del Jugador 
+    //Cambia la dirección del Jugador
     Jugador.cambiarDireccion(tecla);
   }
 };
@@ -142,12 +154,11 @@ Juego.dibujar = function() {
   this.dibujarFondo();
 
 
-  /* Aca hay que agregar la logica para poder dibujar al jugador principal
-  utilizando al dibujante y los metodos que nos brinda.
-  "Dibujante dibuja al jugador" */
-
-  /* Completar */
+  // Dibuja jugador principal en pantalla
   Dibujante.dibujarEntidad(Jugador);
+
+  //Dibujar línea de llegada
+  Dibujante.dibujarRectangulo("red", 759, 544, 128, 20);
 
   // Se recorren los obstaculos de la carretera pintandolos
   this.obstaculosCarretera.forEach(function(obstaculo) {
@@ -201,10 +212,9 @@ Juego.chequearColisiones = function(x, y) {
   var puedeMoverse = true
   this.obstaculos().forEach(function(obstaculo) {
     if (this.intersecan(obstaculo, this.jugador, x, y)) {
-
-      /*COMPLETAR, obstaculo debe chocar al jugador*/
-
-      puedeMoverse = false
+      //Jugador pierde vida y no puede moverse
+      obstaculo.chocar(this.jugador);
+      puedeMoverse = false;
     }
   }, this)
   return puedeMoverse
