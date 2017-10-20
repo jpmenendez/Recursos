@@ -2,11 +2,7 @@
 existentes.
 Le dara ordenes al Dibujante para que dibuje entidades en la pantalla. Cargara
 el mapa, chequeara colisiones entre los objetos y actualizara sus movimientos
-y ataques. Gran parte de su implementacion esta hecha, pero hay espacios con el
-texto COMPLETAR que deben completarse segun lo indique la consigna.
-
-El objeto Juego contiene mucho codigo. Tomate tu tiempo para leerlo tranquilo
-y entender que es lo que hace en cada una de sus partes. */
+y ataques. */
 
 var Juego = {
   // Aca se configura el tamanio del canvas del juego
@@ -54,9 +50,16 @@ var Juego = {
     new Obstaculo('', 279, 23, 664, 56, 2),
     new Obstaculo('', 887, 79, 56, 480, 2)
   ],
-  // Los enemigos se agregaran en este arreglo.
+  // Enemigos
   enemigos: [
-
+     new ZombieCaminante("imagenes/zombie1.png",175,200,10,10,1,{desdeX: 20, hastaX: 941, desdeY: 20, hastaY: 557}),
+     new ZombieCaminante('imagenes/zombie2.png',475,450,10,10,1,{desdeX: 20, hastaX: 941, desdeY: 20, hastaY: 557}),
+     new ZombieCaminante('imagenes/zombie3.png',150,120,10,10,1,{desdeX: 20, hastaX: 941, desdeY: 20, hastaY: 557}),
+     new ZombieCaminante('imagenes/zombie4.png',585,770,10,10,1,{desdeX: 20, hastaX: 941, desdeY: 20, hastaY: 557}),
+     new ZombieCaminante('imagenes/zombie4.png',880,600,10,10,1,{desdeX: 480, hastaX: 941, desdeY: 20, hastaY: 600}),
+     new ZombieConductor('imagenes/tren_horizontal.png',400,322,90,30,5,{desdeX: 20, hastaX: 850, desdeY: 0, hastaY: 322},"h"),
+     new ZombieConductor('imagenes/tren_vertical.png',644,0,30,90,5,{desdeX: 0, hastaX: 850, desdeY: 0, hastaY: 470},"v"),
+     new ZombieConductor('imagenes/tren_vertical.png',678,0,30,90,3,{desdeX: 0, hastaX: 850, desdeY: 0, hastaY: 470},"v")
   ]
 
 }
@@ -104,7 +107,6 @@ Juego.comenzar = function() {
 };
 
 Juego.buclePrincipal = function() {
-
   // Con update se actualiza la logica del juego, tanto ataques como movimientos
   this.update();
   // Funcion que dibuja por cada fotograma a los objetos en pantalla.
@@ -150,25 +152,27 @@ Juego.capturarMovimiento = function(tecla) {
 Juego.dibujar = function() {
   // Borrar el fotograma actual
   Dibujante.borrarAreaDeJuego();
-  //Se pinta la imagen de fondo segun el estado del juego
+  //Se pinta la imagen de fondo según el estado del juego
   this.dibujarFondo();
 
+  if(!this.terminoJuego() && !this.ganoJuego()){
+    // Dibuja jugador principal en pantalla
+    Dibujante.dibujarEntidad(Jugador);
 
-  // Dibuja jugador principal en pantalla
-  Dibujante.dibujarEntidad(Jugador);
+    //Dibujar línea de llegada
+    Dibujante.dibujarRectangulo("red", 759, 544, 128, 20);
 
-  //Dibujar línea de llegada
-  Dibujante.dibujarRectangulo("red", 759, 544, 128, 20);
+    // Se recorren los obstaculos de la carretera pintandolos
+    this.obstaculosCarretera.forEach(function(obstaculo) {
+      Dibujante.dibujarEntidad(obstaculo);
+    });
 
-  // Se recorren los obstaculos de la carretera pintandolos
-  this.obstaculosCarretera.forEach(function(obstaculo) {
-    Dibujante.dibujarEntidad(obstaculo);
-  });
+    // Se recorren los enemigos pintandolos
+    this.enemigos.forEach(function(enemigo) {
+      Dibujante.dibujarEntidad(enemigo);
+    },this);
+  }
 
-  // Se recorren los enemigos pintandolos
-  this.enemigos.forEach(function(enemigo) {
-    /* Completar */
-  });
 
   // El dibujante dibuja las vidas del jugador
   var tamanio = this.anchoCanvas / this.vidasInicial;
@@ -181,11 +185,12 @@ Juego.dibujar = function() {
 
 
 
-/* Recorre los enemigos haciendo que se muevan. De la misma forma que hicimos
-un recorrido por los enemigos para dibujarlos en pantalla ahora habra que hacer
-una funcionalidad similar pero para que se muevan.*/
+/* Recorre los enemigos haciendo que se muevan. */
 Juego.moverEnemigos = function() {
-  /* COMPLETAR */
+  // Se recorren los enemigos moviéndolos
+  this.enemigos.forEach(function(enemigo) {
+    enemigo.mover();
+  }, this);
 };
 
 /* Recorre los enemigos para ver cual esta colisionando con el jugador
@@ -194,12 +199,12 @@ Para chequear las colisiones estudiar el metodo posicionValida. Alli
 se ven las colisiones con los obstaculos. En este caso sera con los zombies. */
 Juego.calcularAtaques = function() {
   this.enemigos.forEach(function(enemigo) {
-    if (intersecan(enemigo, this.jugador, this.jugador.x, this.jugador.y)) {
-      /* Si el enemigo colisiona debe empezar su ataque
-      COMPLETAR */
+    if (this.intersecan(enemigo, this.jugador, this.jugador.x, this.jugador.y)) {
+      /* Si el enemigo colisiona empieza su ataque*/
+      enemigo.comenzarAtaque(this.jugador);
     } else {
-      /* Sino, debe dejar de atacar
-      COMPLETAR */
+      /* Sino, deja de atacar */
+      enemigo.dejarDeAtacar(this.jugador);
     }
   }, this);
 };
@@ -238,7 +243,7 @@ Juego.intersecan = function(elemento1, elemento2, x, y) {
 
 Juego.dibujarFondo = function() {
   // Si se termino el juego hay que mostrar el mensaje de game over de fondo
-  if (this.terminoJuego()) {
+  if (this.terminoJuego() && !this.ganoJuego()) {
     Dibujante.dibujarImagen('imagenes/mensaje_gameover.png', 0, 5, this.anchoCanvas, this.altoCanvas);
     document.getElementById('reiniciar').style.visibility = 'visible';
   }
@@ -272,6 +277,8 @@ document.addEventListener('keydown', function(e) {
     39: 'der',
     40: 'abajo'
   };
-
-  Juego.capturarMovimiento(allowedKeys[e.keyCode]);
+  // Solo captura el movimiento si no se ganó ni se terminó el juego
+  if (!Juego.ganoJuego() && !Juego.terminoJuego()) {
+    Juego.capturarMovimiento(allowedKeys[e.keyCode]);
+  }
 });
